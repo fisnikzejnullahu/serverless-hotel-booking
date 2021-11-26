@@ -1,20 +1,18 @@
-package com.hotelx.booking.control;
+package it;
 
 import com.hotelx.booking.RoomBookingException;
+import com.hotelx.booking.control.BookingManager;
 import com.hotelx.booking.entity.Room;
 import com.hotelx.booking.entity.RoomStatus;
-import com.hotelx.booking.entity.RoomType;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
 
 /**
-* @author Fisnik Zejnullahu
-*/
+ * @author Fisnik Zejnullahu
+ */
 public class BookingManagerIT {
 
     private BookingManager bookingManager;

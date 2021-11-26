@@ -20,11 +20,11 @@ public class BookingManager {
 
     private final String TABLE_NAME;
     private final DynamoDbEnhancedClient ENHANCED_DDB_CLIENT;
-    private final long DEFAULT_RESERVATION_TIME_MINUTES;
+    private final int RESERVATION_TIME_MINUTES;
 
-    public BookingManager(String dynamoDbTableName, long defaultReservationTimeMinutes) {
+    public BookingManager(String dynamoDbTableName, int defaultReservationTimeMinutes) {
         this.TABLE_NAME = dynamoDbTableName;
-        this.DEFAULT_RESERVATION_TIME_MINUTES = defaultReservationTimeMinutes;
+        this.RESERVATION_TIME_MINUTES = defaultReservationTimeMinutes;
 
         var ddb = DynamoDbClient.builder()
                 .region(Region.EU_CENTRAL_1)
@@ -46,7 +46,7 @@ public class BookingManager {
             throw new RoomBookingException("Room is under reservation!");
         }
 
-        room.setReservationExpireIn(Instant.now().plusSeconds(DEFAULT_RESERVATION_TIME_MINUTES * 60).toEpochMilli());
+        room.setReservationExpireIn(Instant.now().plusSeconds(RESERVATION_TIME_MINUTES * 60).toEpochMilli());
         room.setRoomStatus(RoomStatus.RESERVED);
         putRoomItemInDd(room);
     }

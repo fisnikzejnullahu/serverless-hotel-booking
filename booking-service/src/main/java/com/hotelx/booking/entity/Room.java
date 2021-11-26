@@ -9,26 +9,26 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbParti
 @DynamoDbBean
 public class Room {
 
-    private String roomNumber;
+    private String roomId;
     private RoomStatus roomStatus;
     private long reservationExpireIn;
 
     public Room() {
     }
 
-    public Room(String roomNumber, RoomStatus roomStatus, long reservationExpireIn) {
-        this.roomNumber = roomNumber;
+    public Room(String roomId, RoomStatus roomStatus, long reservationExpireIn) {
+        this.roomId = roomId;
         this.roomStatus = roomStatus;
         this.reservationExpireIn = reservationExpireIn;
     }
 
     @DynamoDbPartitionKey
-    public String getRoomNumber() {
-        return roomNumber;
+    public String getRoomId() {
+        return roomId;
     }
 
-    public void setRoomNumber(String roomNumber) {
-        this.roomNumber = roomNumber;
+    public void setRoomId(String roomId) {
+        this.roomId = roomId;
     }
 
     public RoomStatus getRoomStatus() {
