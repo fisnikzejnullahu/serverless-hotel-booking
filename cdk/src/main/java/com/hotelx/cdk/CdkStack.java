@@ -84,6 +84,8 @@ public class CdkStack extends Stack {
                 "com.hotelx.sfn.boundary.FunctionHandler::handle",
                 "../saga-lambda/target/function.jar",
                 Map.of("statemachine_arn", saga.getStateMachineArn()));
+
+        saga.grantStartExecution(sagaFunction);
     }
 
     Function createLambda(String functionName, String handler, String jarFileLocation, Map<String, String> envVariables) {
