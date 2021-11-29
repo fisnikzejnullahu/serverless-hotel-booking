@@ -21,6 +21,9 @@ public class BookingManager {
     private final String TABLE_NAME;
     private final DynamoDbEnhancedClient ENHANCED_DDB_CLIENT;
     private final int RESERVATION_TIME_MINUTES;
+    private final String ROOM_RESERVE_PENDING_MESSAGE = "Please make your payment so you can reserve your room!";
+    private final String ROOM_RESERVE_CONFIRM_MESSAGE = "Room was reserved successfully!";
+    private final String ROOM_RESERVE_CANCEL_MESSAGE = "Room reservation was cancelled!";
 
     public BookingManager(String dynamoDbTableName, int defaultReservationTimeMinutes) {
         this.TABLE_NAME = dynamoDbTableName;
@@ -35,34 +38,39 @@ public class BookingManager {
                 .build();
     }
 
-    public void reserveRoom(String roomId) throws RoomBookingException {
+    public String reserveRoom(String roomId) throws RoomBookingException {
         Room room = getRoom(roomId);
 
-        if (room.getRoomStatus() == RoomStatus.UNAVAILABLE) {
-            throw new RoomBookingException("Room is unavailable!");
+        if (room != null) {
+            if (room.getRoomStatus() == RoomStatus.RESERVED) {
+                throw new RoomBookingException("Room is already reserved!");
+            }
+
+            if (room.getRoomStatus() == RoomStatus.RESERVE_PENDING && !reservationExpired(room.getReservationExpireIn())) {
+                throw new RoomBookingException("Someone else is reserving this room!");
+            }
         }
 
-        if (room.getRoomStatus() == RoomStatus.RESERVED && !reservationExpired(room.getReservationExpireIn())) {
-            throw new RoomBookingException("Room is under reservation!");
-        }
-
-        room.setReservationExpireIn(Instant.now().plusSeconds(RESERVATION_TIME_MINUTES * 60).toEpochMilli());
-        room.setRoomStatus(RoomStatus.RESERVED);
+        var expireIn = Instant.now().plusSeconds(RESERVATION_TIME_MINUTES * 60).toEpochMilli();
+        room = new Room(roomId, RoomStatus.RESERVE_PENDING, expireIn);
         putRoomItemInDd(room);
+        return ROOM_RESERVE_PENDING_MESSAGE;
     }
 
-    public void confirmRoomReservation(String roomId) {
+    public String confirmRoomReservation(String roomId) {
         Room room = getRoom(roomId);
         room.setReservationExpireIn(0);
-        room.setRoomStatus(RoomStatus.UNAVAILABLE);
+        room.setRoomStatus(RoomStatus.RESERVED);
         putRoomItemInDd(room);
+        return ROOM_RESERVE_CONFIRM_MESSAGE;
     }
 
-    public void cancelRoomReservation(String roomId) {
+    public String cancelRoomReservation(String roomId) {
         Room room = getRoom(roomId);
         room.setReservationExpireIn(0);
         room.setRoomStatus(RoomStatus.AVAILABLE);
         putRoomItemInDd(room);
+        return ROOM_RESERVE_CANCEL_MESSAGE;
     }
 
     public Room getRoom(String roomId) {

@@ -32,9 +32,9 @@ public class PaymentsService {
                 .build();
     }
 
-    public String processPayment(double amount, String roomNumber) {
+    public String processPayment(double amount, String roomId) {
         try {
-            Payment payment = new Payment(UUID.randomUUID().toString(), amount, "CONFIRMED", roomNumber, Instant.now());
+            Payment payment = new Payment(UUID.randomUUID().toString(), amount, "CONFIRMED", roomId, Instant.now());
             putPaymentItemInDd(payment);
             return payment.getId();
         } catch (DynamoDbException ex) {

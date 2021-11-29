@@ -8,6 +8,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.UUID;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -21,14 +23,14 @@ public class BookingManagerIT {
     @Before
     public void init() {
         this.bookingManager = new BookingManager("Rooms", 1);
-        this.roomId = "100";
+        this.roomId = UUID.randomUUID().toString();
     }
 
     @Test
     public void testRoomReserve() throws RoomBookingException {
         this.bookingManager.reserveRoom(roomId);
         Room room = this.bookingManager.getRoom(roomId);
-        assertEquals(RoomStatus.RESERVED, room.getRoomStatus());
+        assertEquals(RoomStatus.RESERVE_PENDING, room.getRoomStatus());
     }
 
     @Test(expected = RoomBookingException.class)
@@ -41,11 +43,11 @@ public class BookingManagerIT {
     public void testRoomReservationConfirm() throws RoomBookingException {
         this.bookingManager.reserveRoom(roomId);
         Room room = this.bookingManager.getRoom(roomId);
-        assertEquals(RoomStatus.RESERVED, room.getRoomStatus());
+        assertEquals(RoomStatus.RESERVE_PENDING, room.getRoomStatus());
 
         this.bookingManager.confirmRoomReservation(roomId);
         room = this.bookingManager.getRoom(roomId);
-        assertEquals(RoomStatus.UNAVAILABLE, room.getRoomStatus());
+        assertEquals(RoomStatus.RESERVED, room.getRoomStatus());
     }
 
     @After

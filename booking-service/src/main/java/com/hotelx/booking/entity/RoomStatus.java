@@ -6,6 +6,6 @@ package com.hotelx.booking.entity;
 public enum RoomStatus {
 
     AVAILABLE,
-    UNAVAILABLE,
-    RESERVED
+    RESERVED,
+    RESERVE_PENDING
 }
